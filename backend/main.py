@@ -112,8 +112,8 @@ def sendMessage(displayName, phoneNum, message):
     3. save message in chat table with sender and receiver
     4. optional: do a getrequest to check whether user has received the message    
     '''
-    customerID = '0E09D1B5-86CB-4E89-828E-CA61C850BA06'
-    APIkey = 'M4hajYKMhoXrFnXsg84yMm+FeeSU8Jjoi3JMZVOiMysXXpPvnBv+pxNTss++zrobMxGSc8lcN8ib4elemPPBHw=='
+    customerID = 'ddhgkjdfhgkjdf'
+    APIkey = 'hfksjdfhksjdhfks'
     url = 'https://rest-ww.telesign.com/v1/messaging'
     #phoneNumber = '919023051078'
     message = 'Hi I want to order pepperoni pizza'
