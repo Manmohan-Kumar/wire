@@ -1,0 +1,2 @@
+https://github.com/xRoker/angular-material-chat/blob/master/src/app/components/chat/chat.html
+http://chat-material.surge.sh/
