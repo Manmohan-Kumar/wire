@@ -1,0 +1,12 @@
+<mat-sidenav mode="side" opened="true">
+    <mat-nav-list>
+        <mat-list-item *ngFor="let contact of contactList">            
+            <button>{{ contact.contact_country_code }}-{{ contact.contact_phone_num }}</button>
+           <!--<a matLine href="...">{{ contact.contact_country_code }}-{{ contact.contact_phone_num }}</a>
+             <a matLine href="...">{{ link }}</a>
+           <button mat-icon-button (click)="showInfo(link)">
+              <mat-icon>info</mat-icon>
+           </button>-->
+        </mat-list-item>
+      </mat-nav-list>
+</mat-sidenav>

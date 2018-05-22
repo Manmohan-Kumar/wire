@@ -1,19 +1,18 @@
 <p>
   countries works!
 </p>
-<ul>
+<!--<ul>
   <li *ngFor="let country of countryList">
     {{country.name}}
   </li>
-</ul>
+</ul>-->
 <form>
-<mat-form-field>
-  <mat-select aria-placeholder="Select Country Code" >  
-    
-     <option ng-repeat="country in countryList">{{country.name}}</option>   
-    <!--<option *ngFor="let country in countryList" ng-value="country.name" ng-disabled="$index === 1">
-      {{country.name}}-->
-    
-  </mat-select>
-</mat-form-field>
+  <div>
+  <mat-form-field>
+    <mat-select placeholder="Select country" matInput name="mySelect" ([ngModel])="value" [(value)]="selected">
+      <mat-option *ngFor = "let country of countryList" [value]="country.phonecode"> {{ country.name }}</mat-option>      
+    </mat-select>
+  </mat-form-field>
+  You selected: {{selected}}
+</div>
 </form>

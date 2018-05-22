@@ -4,10 +4,10 @@ import {HttpClientModule} from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import {CountryApiService} from './countries/country.service';
-import { CountriesComponent } from './countries/countries.component';
-
+import { CountriesComponent } from './countries/countries.component'; 
 import { FormsModule } from '@angular/forms'; 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 import {
   MatAutocompleteModule,
   MatButtonModule,
@@ -18,6 +18,7 @@ import {
   MatDatepickerModule,
   MatDialogModule,
   MatExpansionModule,
+  MatFormFieldModule,
   MatGridListModule,
   MatIconModule,
   MatInputModule,
@@ -40,16 +41,25 @@ import {
   MatToolbarModule,
   MatTooltipModule,
   MatStepperModule,
-  MatOptionModule
+  MatOptionModule,  
+  MatBadgeModule,
+  MatBottomSheetModule,  
+  MatDividerModule,  
+  MatTreeModule,
 } from '@angular/material';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import { ContactApiService } from './sidebar/contacts.service';
+import { ChatComponent } from './chat/chat.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    CountriesComponent
+    CountriesComponent,
+    SidebarComponent,
+    ChatComponent
   ],
   imports: [
-    BrowserModule,
+    BrowserModule, FormsModule,
     HttpClientModule,  
     BrowserAnimationsModule,    
     HttpClientModule,
@@ -62,6 +72,7 @@ import {
     MatDatepickerModule,
     MatDialogModule,
     MatExpansionModule,
+    MatFormFieldModule,
     MatGridListModule,
     MatIconModule,
     MatInputModule,
@@ -84,9 +95,13 @@ import {
     MatToolbarModule,
     MatTooltipModule,
     MatStepperModule,
-    MatOptionModule
+    MatOptionModule,    
+    MatBadgeModule,
+    MatBottomSheetModule,
+    MatDividerModule,
+    MatTreeModule,    
   ],
-  providers: [CountryApiService],
+  providers: [CountryApiService, ContactApiService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
