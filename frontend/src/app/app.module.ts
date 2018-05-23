@@ -50,13 +50,16 @@ import {
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ContactApiService } from './sidebar/contacts.service';
 import { ChatComponent } from './chat/chat.component';
+import { ConversationsComponent } from './conversations/conversations.component';
+import { ConversationApiService } from './conversations/conversation.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     CountriesComponent,
     SidebarComponent,
-    ChatComponent
+    ChatComponent,
+    ConversationsComponent
   ],
   imports: [
     BrowserModule, FormsModule,
@@ -101,7 +104,7 @@ import { ChatComponent } from './chat/chat.component';
     MatDividerModule,
     MatTreeModule,    
   ],
-  providers: [CountryApiService, ContactApiService],
+  providers: [CountryApiService, ContactApiService, ConversationApiService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

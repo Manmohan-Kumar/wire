@@ -54,6 +54,35 @@ def fetchUsers():
     session.close()
     return json.dumps(userList.data)
 
+@app.route("/getCurrentUser", methods=['POST'])
+def getCurrentUser():
+    '''
+    send json post request example:
+    {
+      "displayName": "Manmohan",
+      "phoneNum": "9023051078"
+    }
+    fetch current user data
+    '''    
+    #     displayName = request.args.get('displayName')
+    #     phoneNum = request.args.get('phoneNum')
+
+    req_json = request.get_json()
+    displayName = req_json['displayName']
+    phoneNum = req_json['phoneNum']
+    # fetching from the database
+    session = Session()
+    user_objects = session.query(Users.display_name, Users.callback_url, Users.country_phone_code, Users.create_date, Users.phone_number ).\
+    filter(Users.display_name.like(displayName) & Users.phone_number.like(phoneNum)).all()
+
+    # transforming into JSON-serializable objects
+    schema = UserSchema(many=True)
+    userList = schema.dump(user_objects)
+
+    # serializing as JSON
+    session.close()
+    return json.dumps(userList.data)
+
 @app.route("/getContacts")
 def getContacts(displayName = 'Krishna', phoneNum = '8427434777'):
     '''
@@ -112,8 +141,8 @@ def sendMessage(displayName, phoneNum, message):
     3. save message in chat table with sender and receiver
     4. optional: do a getrequest to check whether user has received the message    
     '''
-    customerID = 'ddhgkjdfhgkjdf'
-    APIkey = 'hfksjdfhksjdhfks'
+    customerID = '0E09D1B5-86CB-4E89-828E-CA61C850BA06'
+    APIkey = 'M4hajYKMhoXrFnXsg84yMm+FeeSU8Jjoi3JMZVOiMysXXpPvnBv+pxNTss++zrobMxGSc8lcN8ib4elemPPBHw=='
     url = 'https://rest-ww.telesign.com/v1/messaging'
     #phoneNumber = '919023051078'
     message = 'Hi I want to order pepperoni pizza'
@@ -143,22 +172,37 @@ def sendMessage(displayName, phoneNum, message):
     '''
     return jsonify(jsonResponse)
     
-class Employees(Resource):
-    def get(self):        
-        # fetching from the database
-        session = Session()
-        user_objects = session.query(Users).all()
-    
-        # transforming into JSON-serializable objects
-        schema = UserSchema(many=True)
-        userList = schema.dump(user_objects)
-    
-        # serializing as JSON
-        session.close()
-        return json.dumps(userList.data)
-
-api.add_resource(Employees, '/employees') # Route_1
-
+# class Employees(Resource):
+#     def get(self):        
+#         # fetching from the database
+#         session = Session()
+#         user_objects = session.query(Users).all()
+#     
+#         # transforming into JSON-serializable objects
+#         schema = UserSchema(many=True)
+#         userList = schema.dump(user_objects)
+#     
+#         # serializing as JSON
+#         session.close()
+#         return json.dumps(userList.data)
+# 
+# api.add_resource(Employees, '/employees') # Route_1
+# 
+# @app.route('/form-example', methods=['POST']) #allow both GET and POST requests
+# def form_example():
+#     req_data = request.get_json()
+#     language = req_data['language']
+#     framework = req_data['framework']
+#     python_version = req_data['version_info']['python'] #two keys are needed because of the nested object
+#     example = req_data['examples'][0] #an index is needed because of the array
+#     boolean_test = req_data['boolean_test']
+# 
+#     return '''
+#            The language value is: {}
+#            The framework value is: {}
+#            The Python version is: {}
+#            The item at index 0 in the example list is: {}
+#            The boolean value is: {}'''.format(language, framework, python_version, example, boolean_test)
     
     
 if __name__ == '__main__':
