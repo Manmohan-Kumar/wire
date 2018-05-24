@@ -14,9 +14,9 @@ class Chat(Entity, Base):
     sender_id_fk  = Column(Integer)
     receiver_id_fk  = Column(String(5))
     
-    def __init__(self, chat_id, message, sender_id_fk, receiver_id_fk):
+    def __init__(self, message, sender_id_fk, receiver_id_fk):
         Entity.__init__(self)
-        self.chat_id = chat_id        
+#         self.chat_id = chat_id        
         self.message = message
         self.sender_id_fk = sender_id_fk
         self.receiver_id_fk = receiver_id_fk        

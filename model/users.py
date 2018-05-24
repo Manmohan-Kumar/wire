@@ -11,6 +11,7 @@ from sqlalchemy.sql.schema import UniqueConstraint
 class Users(Entity, Base):
     __tablename__ = 'users'
     user_id = Column(Integer, primary_key=True)
+    contact_id = Column(Integer)
     display_name = Column(String(50))
     phone_number  = Column(String(12))
     country_phone_code  = Column(String(5))
@@ -18,11 +19,12 @@ class Users(Entity, Base):
     password = Column(String(20)) 
     telesign_api_key = Column(Text)
     telesign_customer_id = Column(Text)
+    
     __table_args__ = (UniqueConstraint('phone_number', 'display_name', name='_phone_display_uc'),  )    
 
-    def __init__(self, user_id, display_name, phone_number, country_code, callback_url, password, ts_api_key, ts_cust_id):
+    def __init__(self, display_name, phone_number, country_code, callback_url=None, password='default', ts_api_key=None, ts_cust_id=None, contact_id = None):
         Entity.__init__(self)
-        self.user_id = user_id        
+        #self.user_id = user_id        
         self.display_name = display_name
         self.phone_number = phone_number
         self.country_phone_code = country_code
@@ -30,9 +32,11 @@ class Users(Entity, Base):
         self.password = password
         self.telesign_api_key = ts_api_key
         self.telesign_customer_id = ts_cust_id
+        self.contact_id = contact_id
         
 class UserSchema (Schema):
     user_id = fields.Integer()
+    contact_id = fields.Integer()
     display_name = fields.Str()
     phone_number  = fields.Str()
     country_phone_code  = fields.Str()

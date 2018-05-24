@@ -1,3 +1,20 @@
 https://github.com/xRoker/angular-material-chat/blob/master/src/app/components/chat/chat.html
 http://chat-material.surge.sh/
 https://scotch.io/bar-talk/processing-incoming-request-data-in-flask
+
+Post request:
+http://127.0.0.1:5000/send-message
+{
+  "currentUser_displayName": "Manmohan",
+  "receiver_displayName": "Harsh",
+  "sender_phoneNum": "9023051078",  
+  "receiver_countryPhoneCode":"91",
+  "receiver_phoneNum":"7009600580",
+  "message":"Be grateful to the great Thanos."  
+}
+
+http://127.0.0.1:5000/getCurrentUser
+{
+  "displayName": "Manmohan",
+  "phoneNum": "9023051078"
+}

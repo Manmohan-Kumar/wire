@@ -19,6 +19,7 @@ alter Table Country add update_date timestamp DEFAULT current_timestamp;
 alter Table Country add create_date timestamp DEFAULT current_timestamp;
 Alter Table users Modify create_date timestamp DEFAULT current_timestamp;
 Alter Table users add update_date timestamp DEFAULT current_timestamp;
+Alter Table Users add contact_id INT;
 
 Alter Table country add create_date timestamp DEFAULT current_timestamp;
 Alter Table country add update_date timestamp DEFAULT current_timestamp;
