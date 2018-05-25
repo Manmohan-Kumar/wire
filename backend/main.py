@@ -11,7 +11,7 @@ from requests import post
 from model.entity import Session, engine, Base
 from model.users import Users, UserSchema
 from model.chat import Chat, ChatSchema
-from model.contacts import Contacts, ContactsSchema
+#from model.contacts import Contacts, ContactsSchema
 from model.countries import Country, CountrySchema
 import json
 import base64 
@@ -100,14 +100,7 @@ def getContacts(displayName = 'Krishna', phoneNum = '8427434777'):
     
     session = Session()
     u = aliased(Users)
-    '''
-    uAlias = aliased(Users)
-    cAlias = aliased(Contacts)
 
-    contact_objects = session.query(cAlias.contact_country_code,cAlias.contact_phone_num,  cAlias.update_date).\
-    join(uAlias, (cAlias.user_id == uAlias.user_id)).\
-    filter(uAlias.display_name.like(displayName) & uAlias.phone_number.like(phoneNum) ).all()
-    '''
     contact_objects = session.query(u.user_id, u.display_name, u.callback_url, u.country_phone_code, u.create_date, u.phone_number).\
     filter(u.contact_id == sender_id).all()
     schema = UserSchema(many = True)
@@ -128,16 +121,24 @@ def addContact():
     }
     '''
     req_json = request.get_json()
-    sender_id = req_json['sender_id']
-    con_displayName = req_json['displayName']
-    con_phone_Num = req_json['phoneNum']
-    country_phone_code = req_json['country_phone_code']
-    session = Session()
-    contact = Users(display_name = con_displayName, phone_number= con_phone_Num, country_code = country_phone_code, contact_id = sender_id)
-    session.add(contact)
-    session.commit()
-    session.close()    
-    return  "Contact added Successfully"
+    returnStatus = "Contact added successfully"
+    try:
+            
+        sender_id = req_json['sender_id']
+        con_displayName = req_json['displayName']
+        con_phone_Num = req_json['phoneNum']
+        country_phone_code = req_json['country_phone_code']
+        session = Session()
+        contact = Users(display_name = con_displayName, phone_number= con_phone_Num, country_code = country_phone_code, contact_id = sender_id)
+        session.add(contact)
+        session.commit()
+    except Exception as e:
+        print(e)
+        returnStatus = "Some problem while adding contact, please check for duplicity"
+    finally:
+        returnStatus = "Contact {0} added success fully".format(contact.user_id)
+        session.close()    
+    return  returnStatus
 '''
 #    with session.begin(nested=True):            
     contact=session.query(Users).\
@@ -200,9 +201,11 @@ def sendMessage():
     '''
     example post request:
         {
-          "displayName": "Manmohan",
-          "phoneNum": "9023051078",
-          "countryPhoneCode":"91",
+          "currentUser_displayName": "Manmohan",
+          "receiver_displayName": "Bala",
+          "sender_phoneNum": "9023051078",
+          "receiver_phoneNum": "7009600580",
+          "receiver_countryPhoneCode":"91",
           "message":"Be grateful to the great Thanos."  
         }
     '''
@@ -312,4 +315,4 @@ def sendMessage():
     # 
     
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

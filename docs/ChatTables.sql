@@ -8,21 +8,21 @@ CREATE TABLE IF NOT EXISTS Users (
   create_date timestamp,
   phone_number varchar(12) NOT NULL,
   country_phone_code int(5) NOT NULL,
+  contact_id INT,
   callback_url varchar(255) ,
   password CHAR(41) NOT NULL,
   telesign_api_key varchar(255),
   telesign_customer_id varchar(255),
   PRIMARY KEY (user_id),
+  FOREIGN KEY (contact_id) REFERENCES users(user_id),
   UNIQUE INDEX (phone_number, display_name)
 )engine=INNODB ;
-alter Table Country add update_date timestamp DEFAULT current_timestamp;
-alter Table Country add create_date timestamp DEFAULT current_timestamp;
+
 Alter Table users Modify create_date timestamp DEFAULT current_timestamp;
 Alter Table users add update_date timestamp DEFAULT current_timestamp;
-Alter Table Users add contact_id INT;
 
-Alter Table country add create_date timestamp DEFAULT current_timestamp;
-Alter Table country add update_date timestamp DEFAULT current_timestamp;
+alter Table Country add update_date timestamp DEFAULT current_timestamp;
+alter Table Country add create_date timestamp DEFAULT current_timestamp;
 
 CREATE TABLE `chat` (
 `chat_id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -59,6 +59,7 @@ Insert into chat (message, sender_id_fk, receiver_id_fk) values ("thanos is here
 select * from chat c
 where c.sender_id_fk in (3,4) and c.receiver_id_fk in (3,4) order by chat_id;
 
+-- Contacts table not needed 
 CREATE TABLE `contacts` (
 `contact_id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 `contact_phone_num` varchar(12) NOT NULL,
