@@ -2,6 +2,11 @@ https://github.com/xRoker/angular-material-chat/blob/master/src/app/components/c
 http://chat-material.surge.sh/
 https://scotch.io/bar-talk/processing-incoming-request-data-in-flask
 
+npm install -g @angular/cli
+npm install --save @angular/material @angular/cdk @angular/animations
+ ng new interface
+ ng serve -open
+
 Post request:
 http://127.0.0.1:5000/send-message
 {
