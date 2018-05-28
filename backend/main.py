@@ -94,8 +94,8 @@ def getContacts(displayName = 'Krishna', phoneNum = '8427434777'):
     }
     '''
     req_json = request.get_json()
-    displayName = req_json['displayName']
-    phoneNum = req_json['phoneNum']
+    #displayName = req_json['displayName']
+    #phoneNum = req_json['phoneNum']
     sender_id = req_json['sender_id']
     
     session = Session()
@@ -122,13 +122,14 @@ def addContact():
     '''
     req_json = request.get_json()
     returnStatus = "Contact added successfully"
+    session = Session()
     try:
-            
-        sender_id = req_json['sender_id']
-        con_displayName = req_json['displayName']
-        con_phone_Num = req_json['phoneNum']
-        country_phone_code = req_json['country_phone_code']
-        session = Session()
+        contactJson = req_json['contact']  
+        sender_id = contactJson['sender_id']
+        con_displayName = contactJson['display_name']
+        con_phone_Num = contactJson['phone_number']
+        country_phone_code = contactJson['country_phone_code']
+        
         contact = Users(display_name = con_displayName, phone_number= con_phone_Num, country_code = country_phone_code, contact_id = sender_id)
         session.add(contact)
         session.commit()
@@ -136,7 +137,8 @@ def addContact():
         print(e)
         returnStatus = "Some problem while adding contact, please check for duplicity"
     finally:
-        returnStatus = "Contact {0} added success fully".format(contact.user_id)
+        returnStatus = "Contact {0} added success fully"
+        #returnStatus = "Contact {0} added success fully".format(contact.user_id)
         session.close()    
     return  returnStatus
 '''
