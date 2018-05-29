@@ -56,6 +56,26 @@ Insert into chat (message, sender_id_fk, receiver_id_fk) values ("hey man ", 3,1
 Insert into chat (message, sender_id_fk, receiver_id_fk) values ("nice ", 1,3);
 Insert into chat (message, sender_id_fk, receiver_id_fk) values ("thanos is here", 4,3);
 
+Insert into chat (message, sender_id_fk, receiver_id_fk) values ("Hi what is your name", 4,6);
+Insert into chat (message, sender_id_fk, receiver_id_fk) values ("Hi what is your name", 4,9);
+Insert into chat (message, sender_id_fk, receiver_id_fk) values ("Hi what is your name", 4,10);
+Insert into chat (message, sender_id_fk, receiver_id_fk) values ("Hi what is your name", 4,11);
+
+Insert into chat (message, sender_id_fk, receiver_id_fk) values ("My name is Rekha", 6,4);
+Insert into chat (message, sender_id_fk, receiver_id_fk) values ("My name is Indu", 9,4);
+Insert into chat (message, sender_id_fk, receiver_id_fk) values ("My name is Bala", 10,4);
+Insert into chat (message, sender_id_fk, receiver_id_fk) values ("My name is Billu", 11,4);
+
+Insert into chat (message, sender_id_fk, receiver_id_fk) values ("Such a nice name Rekha", 4,6);
+Insert into chat (message, sender_id_fk, receiver_id_fk) values ("Such a nice name Indu", 4,9);
+Insert into chat (message, sender_id_fk, receiver_id_fk) values ("Such a nice name Bala", 4,10);
+Insert into chat (message, sender_id_fk, receiver_id_fk) values ("Such a nice name Billu", 4,11);
+
+Insert into chat(message, sender_id_fk, receiver_id_fk) values ("Oh thanks Mac", 6,4);
+Insert into chat(message, sender_id_fk, receiver_id_fk) values ("Oh thanks Mac", 9,4);
+Insert into chat(message, sender_id_fk, receiver_id_fk) values ("Oh thanks Mac", 10,4);
+Insert into chat(message, sender_id_fk, receiver_id_fk) values ("Oh thanks Mac", 11,4);
+
 select * from chat c
 where c.sender_id_fk in (3,4) and c.receiver_id_fk in (3,4) order by chat_id;
 

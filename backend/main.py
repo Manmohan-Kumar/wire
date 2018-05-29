@@ -29,13 +29,14 @@ CORS(app)
 # start session
 session = Session()
 
+'''
 # check for existing data
 users = session.query(Users).all()
 print('### Users:')
 for user in users:
     #print(user)
-    print('({user.user_id}) {user.display_name} - {user.phone_number}')
-    
+    print(f'({user.user_id}) {user.display_name} - {user.phone_number}')
+''' 
     
 @app.route("/fetchUsers")
 def fetchUsers():
@@ -137,7 +138,7 @@ def addContact():
         print(e)
         returnStatus = "Some problem while adding contact, please check for duplicity"
     finally:
-        returnStatus = "Contact {0} added success fully"
+        returnStatus = "Contact added success fully"
         #returnStatus = "Contact {0} added success fully".format(contact.user_id)
         session.close()    
     return  returnStatus
@@ -165,15 +166,20 @@ def addContact():
         return "Contact already exists"
 '''
 
-@app.route("/getChatHistory")
+@app.route("/getChatHistory", methods=['GET'])
 def getChatHistory(senderId = 3, receiverId = 4):
     '''
     Fetch list of contacts for a user
     '''
+    
+#     req_json = request.get_json()
+    senderId = request.args.get('sender_id')
+    receiverId = request.args.get('receiver_id')
+    
     session = Session()
     
     chat_objects = session.query(Chat).\
-    filter(Chat.sender_id_fk.in_((senderId, receiverId)) & Chat.receiver_id_fk.in_((senderId,receiverId))).all()
+    filter(Chat.sender_id_fk.in_((senderId, receiverId)) & Chat.receiver_id_fk.in_((senderId,receiverId))).order_by(Chat.create_date.asc()).all()
     schema = ChatSchema(many = True)
     chatList = schema.dump(chat_objects)
     
@@ -211,11 +217,14 @@ def sendMessage():
           "message":"Be grateful to the great Thanos."  
         }
     '''
-
     req_json = request.get_json()
+    ''' 1    
     sender_displayName = req_json['currentUser_displayName']
     receiver_displayName = req_json['receiver_displayName']
     sender_phoneNum = req_json['sender_phoneNum']
+    '''
+    sender_id = req_json['sender_id']
+    receiver_id = req_json['receiver_id']
     receiver_countryPhoneCode = req_json['receiver_countryPhoneCode']
     receiver_phoneNum = req_json['receiver_phoneNum']
     message = req_json['message']
@@ -227,22 +236,30 @@ def sendMessage():
     '''
     # fetching from the database
     session = Session()
+    ''' 1
+        user_objects = session.query( Users.telesign_customer_id, Users.telesign_api_key, Users.user_id ).\
+        filter(Users.display_name.like(sender_displayName) & Users.phone_number.like(sender_phoneNum)).all()
+    '''
     user_objects = session.query( Users.telesign_customer_id, Users.telesign_api_key, Users.user_id ).\
-    filter(Users.display_name.like(sender_displayName) & Users.phone_number.like(sender_phoneNum)).all()
+    filter(Users.user_id.like(sender_id)).all()
 
 
     APIkey = user_objects[0].telesign_api_key
     customerID = user_objects[0].telesign_customer_id
-    sender_id = user_objects[0].user_id
+    ''' 2
+     sender_id = user_objects[0].user_id
+    '''
     
     
     '''
+    3
     fetch receiver_id_fk by querying user table 
     Save message data 
-    '''
+    
     receiver_objects = session.query( Users.user_id ).\
     filter(Users.display_name.like(receiver_displayName) & Users.phone_number.like(receiver_phoneNum)).all()
     receiver_id = receiver_objects[0].user_id
+    '''    
 
     iMessage = Chat (message = message, sender_id_fk = sender_id, receiver_id_fk = receiver_id) 
     
