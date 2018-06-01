@@ -55,6 +55,32 @@ def fetchUsers():
     session.close()
     return json.dumps(userList.data)
 
+@app.route("/login", methods=['POST'])
+def login():
+    '''
+    send json post request example:
+    {
+      "displayName": "Manmohan",
+      "phoneNum": "9023051078"
+    }
+    fetch current user data
+    '''
+    req_json = request.get_json()
+    displayName = req_json['display_name']
+    password = req_json['password']
+    # fetching from the database
+    session = Session()
+    user_objects = session.query(Users.user_id, Users.display_name, Users.callback_url, Users.country_phone_code, Users.create_date, Users.phone_number ).\
+    filter(Users.display_name.like(displayName) & Users.password.like(password)).all()
+
+    # transforming into JSON-serializable objects
+    schema = UserSchema(many=True)
+    userList = schema.dump(user_objects)
+
+    # serializing as JSON
+    session.close()
+    return json.dumps(userList.data)
+
 @app.route("/getCurrentUser", methods=['POST'])
 def getCurrentUser():
     '''
@@ -83,6 +109,46 @@ def getCurrentUser():
     # serializing as JSON
     session.close()
     return json.dumps(userList.data)
+
+@app.route("/register", methods=['POST'])
+def register():
+    '''
+    Add a User
+    {
+      
+      "display_name": "Mohit",
+      "phone_number": "8427434777",
+      "country_phone_code":"91",
+      callback_url : "hdjkfhkdjsf",
+      telesign_customer_id : "ghdkjafhjd",
+      telesign_api_key : "jsdhfjkhsdfkj",
+      password : "ghdfhsdj"
+          }
+    '''
+    req_json = request.get_json()
+    returnStatus = "User created successfully"
+    session = Session()
+    try:
+        userJson = req_json['contact']  
+        user_displayName = userJson['display_name']
+        phone_Num = userJson['phone_number']
+        country_phone_code = userJson['country_phone_code']
+        callback_url = userJson['callback_url']
+        telesign_customer_id = userJson['telesign_customer_id']
+        telesign_api_key = userJson['telesign_api_key']
+        password = userJson['password']
+        
+        newUser = Users(display_name = user_displayName, phone_number= phone_Num, country_code = country_phone_code, callback_url = callback_url, ts_cust_id=telesign_customer_id, ts_api_key= telesign_api_key, password= password)
+        session.add(newUser)
+        session.commit()
+    except Exception as e:
+        print(e)
+        returnStatus = "Some problem while registering user, please check for duplicity"
+    finally:
+        returnStatus = "Registration successfull"
+        #returnStatus = "Contact {0} added success fully".format(contact.user_id)
+        session.close()    
+    return json.dumps(returnStatus)
 
 @app.route("/getContacts", methods=['POST'])
 def getContacts(displayName = 'Krishna', phoneNum = '8427434777'):
@@ -298,40 +364,6 @@ def sendMessage():
     Timestamp    
     '''
     return jsonify(jsonResponse)
-    
-# class Employees(Resource):
-#     def get(self):        
-#         # fetching from the database
-#         session = Session()
-#         user_objects = session.query(Users).all()
-#     
-#         # transforming into JSON-serializable objects
-#         schema = UserSchema(many=True)
-#         userList = schema.dump(user_objects)
-#     
-#         # serializing as JSON
-#         session.close()
-#         return json.dumps(userList.data)
-# 
-# api.add_resource(Employees, '/employees') # Route_1
-# 
-# @app.route('/form-example', methods=['POST']) #allow both GET and POST requests
-# def form_example():
-#     req_data = request.get_json()
-#     language = req_data['language']
-#     framework = req_data['framework']
-#     python_version = req_data['version_info']['python'] #two keys are needed because of the nested object
-#     example = req_data['examples'][0] #an index is needed because of the array
-#     boolean_test = req_data['boolean_test']
-# 
-#     return '''
-#            The language value is: {}
-#            The framework value is: {}
-#            The Python version is: {}
-#            The item at index 0 in the example list is: {}
-#            The boolean value is: {}'''.format(language, framework, python_version, example, boolean_test)
-    # addContact
-    # 
     
 if __name__ == '__main__':
     app.run(debug=True)
