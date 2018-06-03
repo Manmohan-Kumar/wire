@@ -15,6 +15,7 @@ from model.chat import Chat, ChatSchema
 from model.countries import Country, CountrySchema
 import json
 import base64 
+from backend.mainHelper import JWTHelper
 
 
 
@@ -25,6 +26,9 @@ import base64
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
+
+SECRETKEY = 'qE8MkAYuNl6MGO9HRAVNiIeiYRqKxUXMIAvRczROlwuAv'
+jwtUtil = JWTHelper()
 
 # start session
 session = Session()
@@ -60,11 +64,12 @@ def login():
     '''
     send json post request example:
     {
-      "displayName": "Manmohan",
-      "phoneNum": "9023051078"
+      "display_name": "admin",
+      "password": "123456"
     }
     fetch current user data
     '''
+#     request.headers.get('Authorization').split()[1]
     req_json = request.get_json()
     displayName = req_json['display_name']
     password = req_json['password']
@@ -72,14 +77,20 @@ def login():
     session = Session()
     user_objects = session.query(Users.user_id, Users.display_name, Users.callback_url, Users.country_phone_code, Users.create_date, Users.phone_number ).\
     filter(Users.display_name.like(displayName) & Users.password.like(password)).all()
-
-    # transforming into JSON-serializable objects
     schema = UserSchema(many=True)
     userList = schema.dump(user_objects)
+    responseObject = userList.data
+    
+    if(len(user_objects) > 0 and user_objects[0].display_name != ""):
+        display_name_db = user_objects[0].display_name
+        jwt_token = jwtUtil.encode_auth_token(display_name_db, SECRETKEY)
+        responseObject = {'user': responseObject, 'message': 'SUCCESS'}
+        responseObject.update(jwt_token)
+        print(responseObject)    
 
     # serializing as JSON
     session.close()
-    return json.dumps(userList.data)
+    return json.dumps(responseObject)
 
 @app.route("/getCurrentUser", methods=['POST'])
 def getCurrentUser():
@@ -126,7 +137,7 @@ def register():
           }
     '''
     req_json = request.get_json()
-    returnStatus = "User created successfully"
+    returnStatus = "status: User created successfully"
     session = Session()
     try:
         userJson = req_json['contact']  
@@ -143,9 +154,9 @@ def register():
         session.commit()
     except Exception as e:
         print(e)
-        returnStatus = "Some problem while registering user, please check for duplicity"
+        returnStatus = "status: Some problem while registering user, please check for duplicity"
     finally:
-        returnStatus = "Registration successfull"
+        returnStatus = "status: Registration successfull"
         #returnStatus = "Contact {0} added success fully".format(contact.user_id)
         session.close()    
     return json.dumps(returnStatus)
@@ -160,10 +171,16 @@ def getContacts(displayName = 'Krishna', phoneNum = '8427434777'):
       "user_id": "4"
     }
     '''
+    
     req_json = request.get_json()
     #displayName = req_json['displayName']
     #phoneNum = req_json['phoneNum']
-    sender_id = req_json['sender_id']
+    sender_id = req_json['sender_id']    
+    
+    auth_header = request.headers.get('Authorization')
+    sub = jwtUtil.parse_decode_auth_token(auth_header, SECRETKEY)
+    if('INVALID' == sub):
+        return json.dumps({'status':'Logged Out'}) 
     
     session = Session()
     u = aliased(Users)
@@ -187,27 +204,38 @@ def addContact():
       "countryPhoneCode":"91"  
     }
     '''
+    auth_header = request.headers.get('Authorization')
+    sub = jwtUtil.parse_decode_auth_token(auth_header, SECRETKEY)
+    
     req_json = request.get_json()
-    returnStatus = "Contact added successfully"
+    returnStatus = {"status": "Contact added successfully"}
     session = Session()
     try:
         contactJson = req_json['contact']  
         sender_id = contactJson['sender_id']
+        sender_name = contactJson['sender_name']
         con_displayName = contactJson['display_name']
         con_phone_Num = contactJson['phone_number']
         country_phone_code = contactJson['country_phone_code']
         
-        contact = Users(display_name = con_displayName, phone_number= con_phone_Num, country_code = country_phone_code, contact_id = sender_id)
-        session.add(contact)
-        session.commit()
+        if(sender_name == sub):                        
+            contact = Users(display_name = con_displayName, phone_number= con_phone_Num, country_code = country_phone_code, contact_id = sender_id)
+            session.add(contact)
+            session.commit()
+            session.refresh(contact)
+    #         schema = UserSchema(many = True)
+    #         contactList = schema.dump(contact)
+            returnStatus.update({"contact_id": contact.user_id})
+            print(contact.user_id)
+        else:
+            returnStatus = {"status":"FAILURE"}
     except Exception as e:
         print(e)
-        returnStatus = "Some problem while adding contact, please check for duplicity"
-    finally:
-        returnStatus = "Contact added success fully"
+        returnStatus = {"status": "Some problem while adding contact, please check for duplicity"}
+    finally:        
         #returnStatus = "Contact {0} added success fully".format(contact.user_id)
         session.close()    
-    return  returnStatus
+    return  json.dumps(returnStatus)
 '''
 #    with session.begin(nested=True):            
     contact=session.query(Users).\
@@ -364,6 +392,17 @@ def sendMessage():
     Timestamp    
     '''
     return jsonify(jsonResponse)
+
+# send CORS headers
+# @app.after_request
+# def after_request(response):
+#     response.headers.add('Access-Control-Allow-Origin', '*')
+#     if request.method == 'OPTIONS':
+#         response.headers['Access-Control-Allow-Methods'] = 'GET, POST'
+#         headers = request.headers.get('Access-Control-Request-Headers')
+#         if headers:
+#             response.headers['Access-Control-Allow-Headers'] = headers
+#     return response
     
 if __name__ == '__main__':
     app.run(debug=True)

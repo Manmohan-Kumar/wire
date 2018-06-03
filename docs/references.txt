@@ -3,7 +3,8 @@ http://chat-material.surge.sh/
 https://scotch.io/bar-talk/processing-incoming-request-data-in-flask
 
 npm install -g @angular/cli
-npm install --save @angular/material @angular/cdk @angular/animations
+npm install -save-dev @angular/cli@latest @angular/material@latest @angular/cdk @angular/animations@latest
+npm install --save-dev @angular/material@latest @angular/cdk @angular/animations@latest
  ng new interface
  ng serve -open
 
