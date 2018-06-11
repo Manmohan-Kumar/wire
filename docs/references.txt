@@ -2,6 +2,10 @@ https://github.com/xRoker/angular-material-chat/blob/master/src/app/components/c
 http://chat-material.surge.sh/
 https://scotch.io/bar-talk/processing-incoming-request-data-in-flask
 
+Web push notification:
+https://code.luasoftware.com/tutorials/pwa/develop-web-push-notification-server-with-python/
+https://developers.google.com/web/fundamentals/push-notifications/how-push-works
+
 npm install -g @angular/cli
 npm install -save-dev @angular/cli@latest @angular/material@latest @angular/cdk @angular/animations@latest
 npm install --save-dev @angular/material@latest @angular/cdk @angular/animations@latest
