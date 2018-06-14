@@ -208,7 +208,7 @@ def addContact():
     sub = jwtUtil.parse_decode_auth_token(auth_header, SECRETKEY)
     
     req_json = request.get_json()
-    returnStatus = {"status": "Contact added successfully"}
+    returnStatus = {"status": "SUCCESS"}
     session = Session()
     try:
         contactJson = req_json['contact']  
@@ -225,7 +225,7 @@ def addContact():
             session.refresh(contact)
     #         schema = UserSchema(many = True)
     #         contactList = schema.dump(contact)
-            returnStatus.update({"contact_id": contact.user_id})
+            returnStatus.update({"user_id": contact.user_id, "display_name": contact.display_name, "phone_number": contact.phone_number, "country_phone_code": contact.country_phone_code})
             print(contact.user_id)
         else:
             returnStatus = {"status":"FAILURE"}
