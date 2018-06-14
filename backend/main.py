@@ -3,7 +3,7 @@ Created on May 20, 2018
 
 @author: mac
 '''
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_restful import Resource, Api
 from flask_cors import CORS, cross_origin
 from sqlalchemy.orm.util import aliased
@@ -236,29 +236,6 @@ def addContact():
         #returnStatus = "Contact {0} added success fully".format(contact.user_id)
         session.close()    
     return  json.dumps(returnStatus)
-'''
-#    with session.begin(nested=True):            
-    contact=session.query(Users).\
-    filter(Users.display_name.like(con_displayName) & Users.phone_number.like(con_phone_Num)).first()
-    if not contact:
-#            try:
-        contact = Users(display_name = con_displayName, phone_number= con_phone_Num, country_code = country_phone_code)
-        session.add(contact)
-        session.commit()
-        session.begin(subtransactions=True)
-        receiver_id = contact.user_id                
-        empty_chat = Chat (message = None, sender_id_fk = sender_id, receiver_id_fk = receiver_id) 
-        session.add(empty_chat)
-        session.commit()
-#                session.close()
-        return "Contact added Successfully"
-#           except:
-#              pass
-#         finally:
-#            session.close_all()
-    else:
-        return "Contact already exists"
-'''
 
 @app.route("/getChatHistory", methods=['GET'])
 def getChatHistory(senderId = 3, receiverId = 4):
@@ -287,7 +264,8 @@ def getCountries():
     '''
     # fetching from the database
     session = Session()
-    country_objects = session.query(Country).all()
+    c = aliased(Country)
+    country_objects = session.query(c.iso, c.name, c.phonecode).all()
 
     # transforming into JSON-serializable objects
     schema = CountrySchema(many=True)
@@ -392,6 +370,68 @@ def sendMessage():
     Timestamp    
     '''
     return jsonify(jsonResponse)
+
+@app.route('/callback', methods=['POST','GET'])
+def callback():
+    """For now, we will respond to assignment callbacks with empty 200 response
+    https://stackoverflow.com/questions/14955382/python-sqlalchemy-calling-stored-procedures-in-a-loop
+    http://docs.sqlalchemy.org/en/latest/orm/query.html
+    https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlcursor-callproc.html
+    """
+    """
+        {
+     "status":{
+         "updated_on":"2017-01-27T19:46:55.787464Z",
+         "code":1500,
+         "description":"Delivered to customer"
+         },
+     "submit_timestamp":"2017-01-27T19:46:55.778000Z",
+     "errors":[],
+     "user_response":{
+         "phone_number":"13392273726",
+         "sender_id":"222222",
+         "mo_message":"MO message content."
+     },
+     "sub_resource":"mo_sms",
+     "reference_id":"0143D53D86A2030BE20025B600000002"
+    }
+    """
+    req_json = request.get_json()
+    status_code = req_json['status']['code']
+    if(status_code == 1500):
+        user_res = req_json['user_response']
+        sender_mo_phone = user_res['phone_number']
+        receiver_phone = user_res['sender_id']
+        message = user_res['mo_message']
+        '''
+        Stored procedure gets sender and receiver ids from database- User table
+        insert into Chat table
+        '''
+        '''
+        session = Session()
+        query = "call receiveSMS ('{0!s}', '{1!s}', '{2!s}', @OutVal);".format(sender_mo_phone, receiver_phone, message)
+        results = session.execute(query)
+        
+        for row in results:
+            print(row)
+        '''
+        connection = engine.raw_connection()
+        try:
+            cursor = connection.cursor()
+            
+            args = (sender_mo_phone, receiver_phone, message, (0, 'CHAR'))
+            result_args = cursor.callproc('receiveSMS', args)
+            print(result_args[3])
+            
+#             cursor.callproc("receiveSMS", ['x', 'y', 'z'])
+#             results = list(cursor.fetchall())
+            cursor.close()
+            connection.commit()
+        finally:
+            connection.close()
+        
+    resp = Response({}, status = 200, mimetype = 'application/json')
+    return resp
 
 # send CORS headers
 # @app.after_request

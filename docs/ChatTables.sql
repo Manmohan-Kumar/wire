@@ -6,9 +6,10 @@ CREATE TABLE IF NOT EXISTS Users (
   user_id INT NOT NULL AUTO_INCREMENT,
   display_name VARCHAR(50) NOT NULL,  
   create_date timestamp,
-  phone_number varchar(12) NOT NULL,
+  phone_number varchar(17) NOT NULL,
   country_phone_code int(5) NOT NULL,
   contact_id INT,
+  sender_id varchar(12),
   callback_url varchar(255) ,
   password CHAR(41) NOT NULL,
   telesign_api_key varchar(255),
@@ -34,6 +35,44 @@ FOREIGN KEY (sender_id_fk) REFERENCES users(user_id),
 FOREIGN KEY (receiver_id_fk) REFERENCES users(user_id)
 )engine = InnoDB;
 Alter Table chat add update_date timestamp DEFAULT current_timestamp;
+
+CREATE TABLE `notifications` (
+`notification_id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+`message` text,
+`sender_id_fk` int(11) NOT NULL,
+`receiver_id_fk` int(11) NOT NULL,
+`read_flag` boolean Default false,
+`create_date` timestamp DEFAULT CURRENT_TIMESTAMP,
+`update_date` timestamp DEFAULT CURRENT_TIMESTAMP,
+FOREIGN KEY (sender_id_fk) REFERENCES users(user_id),
+FOREIGN KEY (receiver_id_fk) REFERENCES users(user_id)
+)engine = InnoDB;
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `receiveSMS` $$
+CREATE PROCEDURE `receiveSMS`(
+  IN sender_mo_phone VARCHAR(12),
+  IN receiver_phone VARCHAR(12), -- has sender_id
+  IN message VARCHAR(255),
+  OUT status VARCHAR(255)
+)
+BEGIN 
+  SET status :='FAILURE';
+  SET @receiver_id_fk := (SELECT user_id  
+    FROM users
+   WHERE phone_number like receiver_phone);
+   
+  SET @sender_id_fk := (SELECT user_id  
+    FROM users
+   WHERE phone_number like sender_mo_phone);
+   
+   Insert into Chat (message, sender_id_fk, receiver_id_fk) values (message, @sender_id_fk,@receiver_id_fk);   
+   Insert into Notifications (message, sender_id_fk, receiver_id_fk) values (message, @sender_id_fk,@receiver_id_fk);
+   SET status := 'SUCCESS';
+END $$
+
+DELIMITER ;
 
 Insert into users (  display_name ,  phone_number ,  country_phone_code ,  password ,  telesign_api_key ,  telesign_customer_id )
   values('Manmohan', '9023051078', '91', 'abcd', 'dfdsfsd', 'dfsfsdfs');

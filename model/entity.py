@@ -19,7 +19,7 @@ db_user = 'Manmohan'
 db_password = 'Manmohan@86'
 
 engine = create_engine(f'mysql+mysqlconnector://{db_user}:{db_password}@{db_url}/{db_name}')
-
+connection = engine.raw_connection()
 Session = sessionmaker(bind=engine)
 
 Base = declarative_base()

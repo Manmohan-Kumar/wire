@@ -26,7 +26,7 @@ class Users(Entity, Base):
         Entity.__init__(self)
         #self.user_id = user_id        
         self.display_name = display_name
-        self.phone_number = phone_number
+        self.phone_number = phone_number + country_code
         self.country_phone_code = country_code
         self.callback_url = callback_url
         self.password = password
