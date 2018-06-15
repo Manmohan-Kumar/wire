@@ -28,3 +28,20 @@ http://127.0.0.1:5000/getCurrentUser
   "displayName": "Manmohan",
   "phoneNum": "9023051078"
 }
+
+Firebase: https://console.firebase.google.com/project/conversations-manmohan/overview
+
+
+<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAhAFkZ1w_as6K0_1ZPBc7HkBT-gX66WkQ",
+    authDomain: "conversations-manmohan.firebaseapp.com",
+    databaseURL: "https://conversations-manmohan.firebaseio.com",
+    projectId: "conversations-manmohan",
+    storageBucket: "",
+    messagingSenderId: "74058689148"
+  };
+  firebase.initializeApp(config);
+</script>
